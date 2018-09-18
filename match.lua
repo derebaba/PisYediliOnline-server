@@ -18,13 +18,13 @@ function M.match_init(context, setupstate)
   do
     table.insert(cards, i)
   end
-  cards = shuffle(cards)
+  local deck = shuffle(cards)
 
   print(("match_init sid: %s"):format(context.session_id))
 
-  local playerPresences = {}
+  local presences = {}
   for i = 1, #setupstate.expected_users, 1 do
-	table.insert(playerPresences, setupstate.expected_users[i].presence)
+	table.insert(presences, setupstate.expected_users[i].presence)
   end
 
   for k, v in pairs(context) do
@@ -32,7 +32,8 @@ function M.match_init(context, setupstate)
   end
 
   local gamestate = {
-    presences = playerPresences
+	presences = presences,
+	deck = deck
   }
   local tickrate = 1 -- per sec
   local label = ""
