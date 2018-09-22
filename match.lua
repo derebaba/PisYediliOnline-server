@@ -37,10 +37,56 @@ function M.match_join_attempt(context, dispatcher, tick, state, presence)
 end
 
 function M.match_join(context, dispatcher, tick, state, presences)
-	for _, presence in ipairs(presences) do
-	state.presences[presence.session_id] = presence
-	print(("Joined match sid: %s"):format(presence.session_id))
+
+	print(#presences)
+
+	local directions = {}
+	for i = 1, 4, 1
+	do
+		table.insert(directions, i)
 	end
+
+	directions = shuffle(directions)
+
+	local turn = directions[0]
+
+	local players = {}
+
+	for _, presence in ipairs(presences) do
+		local cards = {}
+		for i = 1, 7, 1 do
+			table.insert(cards, table.remove(state.deck))
+		end
+
+		presence.cards = cards;
+		presence.direction = table.remove(directions)
+		if(turn == presence.direction) then
+			table.insert(cards, table.remove(state.deck))
+		end
+
+		local player = {
+			cards = #presence.cards,
+			direction = presence.direction,
+			username = presence.username
+		}
+		table.insert(players, player)
+	end
+
+	for index, presence in ipairs(presences) do
+		state.presences[presence.session_id] = presence
+
+		local message = {
+			cards = presence.cards,
+			players = players,
+			turn = turn,
+			deckSize = 52 - #presences * 7 - 1
+		}
+
+		print(("message: %s"):format(nk.json_encode(message)))
+
+		dispatcher.broadcast_message(1, nk.json_encode(message), {presence})
+	end
+
 	return state
 end
 
@@ -53,10 +99,7 @@ end
 
 function M.match_loop(context, dispatcher, tick, state, messages)
 	for _, presence in pairs(state.presences) do
-		print(("Presence %s match: %s"):format(presence.session_id, context.match_id))
-		for key, value in ipairs(presence) do
-			print(("k: %s v: %s"):format(key, value))
-		end
+		--print(("Presence %s match: %s"):format(presence.session_id, context.match_id))
 	end
 	for _, message in ipairs(messages) do
 		print(("Received %s from %s"):format(message.sender.username, message.data))
