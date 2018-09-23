@@ -5,7 +5,7 @@ local function matchmaker_matched(context, matchmaker_users)
 		return nil
 	end
 
-	return nk.match_create("match", {debug = true, expected_users = matchmaker_users})
+	return nk.match_create("match", {debug = true, presences = matchmaker_users})
 end
 
 nk.register_matchmaker_matched(matchmaker_matched)
