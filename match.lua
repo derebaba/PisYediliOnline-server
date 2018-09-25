@@ -24,7 +24,7 @@ function M.match_init(context, setupstate)
 
 	print("match_init number of players: ", #setupstate.presences)
 	local directions = {}
-	for i = 1, #setupstate.presences, 1
+	for i = 0, #setupstate.presences - 1, 1
 	do
 		table.insert(directions, i)
 	end
