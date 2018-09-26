@@ -68,7 +68,8 @@ function M.match_init(context, setupstate)
 		deck = deck,
 		players = players,
 		turn = turn,
-		pile = {}
+		pile = {},
+		clockwise = true
 	}
 	local tickrate = 1 -- per sec
 	local label = ""
@@ -87,7 +88,8 @@ function M.match_join(context, dispatcher, tick, state, presences)
 		cards = state.presences[presence.session_id].cards,
 		players = state.players,
 		turn = state.turn,
-		deckSize = #state.deck
+		deckSize = #state.deck,
+		clockwise = state.clockwise
 	}
 
 	print(("message: %s"):format(nk.json_encode(gameStartMessage)))
