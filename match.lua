@@ -119,14 +119,17 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 	for _, presence in pairs(state.presences) do
 		--print(("Presence %s match: %s"):format(presence.session_id, context.match_id))
 	end
-	for _, message in ipairs(messages) do
-		print(("Received %s from %s"):format(message.sender.username, message.data))
-		local decoded = nk.json_decode(message.data)
-		for k, v in pairs(decoded) do
-			print(("Message key %s contains value %s"):format(k, v))
+	for _, message in ipairs(messages) do	--	sender, op_code, data, receive_time_ms
+		print("Message received with op_code: ", message.op_code)
+		if (message.op_code == 2) then	--	DRAW_CARD
+			local sendMessage = {
+				card = table.remove(state.deck)
+			}
+			table.insert(state.presences[message.sender.session_id].cards, sendMessage.card)
+
+			dispatcher.broadcast_message(2, nk.json_encode(sendMessage), {state.presences[message.sender.session_id]})
 		end
-		-- PONG message back to sender
-		dispatcher.broadcast_message(1, message.data, {state.presences[message.sender.session_id]})
+		--local decoded = nk.json_decode(message.data)
 	end
 	return state
 end
