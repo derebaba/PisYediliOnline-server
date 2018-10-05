@@ -15,4 +15,10 @@ function mh.drawCard(context, dispatcher, tick, state, message)
 	dispatcher.broadcast_message(3, nk.json_encode(senderPresence.direction))
 end
 
+function mh.playCard(context, dispatcher, tick, state, message)
+	print(("playCard - %s played %s"):format(message.sender.username, nk.json_decode(message.data)))
+
+end
+
+
 return mh

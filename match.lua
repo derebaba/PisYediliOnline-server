@@ -128,6 +128,7 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 		local functionTable =
 		{
 			[2] = mh.drawCard,
+			[4] = mh.playCard
 		}
 
 		local func = functionTable[message.op_code]
