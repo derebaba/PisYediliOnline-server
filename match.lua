@@ -1,4 +1,5 @@
 local nk = require("nakama")
+local mh = require("handle_messages")
 
 local M = {}
 
@@ -31,7 +32,8 @@ function M.match_init(context, setupstate)
 
 	directions = shuffle(directions)
 
-	local turn = directions[1]	--	first direction to start (1 is first index in Lua)
+	local turnCount = 0
+	local turn = directions[turnCount + 1]	--	first direction to start (1 is first index in Lua)
 
 	local players = {}	--	players will be sent as a message
 
@@ -41,7 +43,7 @@ function M.match_init(context, setupstate)
 		setupstate.presences[presence.session_id] = presence
 
 		local cards = {}
-		for i = 1, 7, 1 do
+		for _ = 1, 7, 1 do
 			table.insert(cards, table.remove(deck))
 		end
 
@@ -69,7 +71,8 @@ function M.match_init(context, setupstate)
 		players = players,
 		turn = turn,
 		pile = {},
-		clockwise = true
+		clockwise = true,
+		turnCount = turnCount
 	}
 	local tickrate = 1 -- per sec
 	local label = ""
@@ -92,7 +95,7 @@ function M.match_join(context, dispatcher, tick, state, presences)
 		clockwise = state.clockwise
 	}
 
-	print(("message: %s"):format(nk.json_encode(gameStartMessage)))
+	print(("match_join - message: %s"):format(nk.json_encode(gameStartMessage)))
 
 	dispatcher.broadcast_message(1, nk.json_encode(gameStartMessage), {presence})
 	return state
@@ -121,15 +124,19 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 	end
 	for _, message in ipairs(messages) do	--	sender, op_code, data, receive_time_ms
 		print("Message received with op_code: ", message.op_code)
-		if (message.op_code == 2) then	--	DRAW_CARD
-			local sendMessage = {
-				card = table.remove(state.deck)
-			}
-			table.insert(state.presences[message.sender.session_id].cards, sendMessage.card)
 
-			dispatcher.broadcast_message(2, nk.json_encode(sendMessage), {state.presences[message.sender.session_id]})
+		local functionTable =
+		{
+			[2] = mh.drawCard,
+		}
+
+		local func = functionTable[message.op_code]
+		if(func) then
+			func(context, dispatcher, tick, state, message)
+		else
+			print("Unknown opcode")
 		end
-		--local decoded = nk.json_decode(message.data)
+
 	end
 	return state
 end
