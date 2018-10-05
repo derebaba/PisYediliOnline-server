@@ -14,8 +14,22 @@ function mh.drawCard(context, dispatcher, tick, state, message)
 end
 
 function mh.playCard(context, dispatcher, tick, state, message)
-	print(("playCard - %s played %s"):format(message.sender.username, nk.json_decode(message.data)))
+	local card = nk.json_decode(message.data)
 
+	print(("playCard - %s played %s"):format(message.sender.username, card))
+
+	state.turnCount = state.turnCount + 1
+
+	local senderPresence = state.presences[message.sender.session_id];
+
+	for i = 1, #senderPresence.cards, 1 do
+		if (senderPresence.cards[i] == card) then
+			table.remove(senderPresence.cards, i)
+			break
+		end
+	end
+
+	dispatcher.broadcast_message(4, nk.json_decode(message.data))
 end
 
 
