@@ -32,8 +32,8 @@ function M.match_init(context, setupstate)
 
 	directions = shuffle(directions)
 
-	local turnCount = 0
-	local turn = directions[turnCount + 1]	--	first direction to start (1 is first index in Lua)
+	local turnCount = 1
+	local turn = directions[turnCount]	--	first direction to start (1 is first index in Lua)
 
 	local players = {}	--	players will be sent as a message
 
@@ -48,7 +48,9 @@ function M.match_init(context, setupstate)
 		end
 
 		presence.cards = cards;
-		presence.direction = table.remove(directions)
+		presence.direction = directions[turnCount]
+
+		turnCount = turnCount + 1
 
 		--	first player gets +1 card
 		if(turn == presence.direction) then
@@ -63,6 +65,7 @@ function M.match_init(context, setupstate)
 		table.insert(players, player)
 	end
 
+	turnCount = 1
 	print("match_init setupstate.presences: ", nk.json_encode(setupstate.presences))
 	--	initialize gamestate
 	local gamestate = {
@@ -72,7 +75,8 @@ function M.match_init(context, setupstate)
 		turn = turn,
 		pile = {},
 		clockwise = true,
-		turnCount = turnCount
+		turnCount = turnCount,
+		directions = directions
 	}
 	local tickrate = 1 -- per sec
 	local label = ""
