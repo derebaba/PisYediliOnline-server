@@ -2,15 +2,20 @@ local nk = require("nakama")
 
 local mh = {}
 
-function mh.drawCard(context, dispatcher, tick, state, message)
+local giveCardToPresence = function (state, dispatcher, presence)
 	local card = table.remove(state.deck)
 
+	table.insert(presence.cards, card)
+
+	dispatcher.broadcast_message(2, nk.json_encode(card), {presence})
+
+	dispatcher.broadcast_message(3, nk.json_encode(presence.direction))
+end
+
+function mh.drawCard(context, dispatcher, tick, state, message)
 	local senderPresence = state.presences[message.sender.session_id];
-	table.insert(senderPresence.cards, card)
 
-	dispatcher.broadcast_message(2, nk.json_encode(card), {senderPresence})
-
-	dispatcher.broadcast_message(3, nk.json_encode(senderPresence.direction))
+	giveCardToPresence(state, dispatcher, senderPresence)
 end
 
 function mh.playCard(context, dispatcher, tick, state, message)
@@ -31,8 +36,12 @@ function mh.playCard(context, dispatcher, tick, state, message)
 
 	dispatcher.broadcast_message(4, message.data)
 
-	print("play card -- state.directions", nk.json_encode(state.directions))
+	print("play card - state.directions", nk.json_encode(state.directions))
 	print(("playCard - next player: %s"):format(state.directions[(state.turnCount % #state.players) + 1]))
+
+	if (card % 13 == 0) then
+		--local drawingPlayer = state.players[]
+	end
 
 	local nextPlayerDirection = state.directions[(state.turnCount % #state.players) + 1]
 

@@ -60,13 +60,15 @@ function M.match_init(context, setupstate)
 		local player = {
 			cardCount = #presence.cards,
 			direction = presence.direction,
-			username = presence.username
+			username = presence.username,
+			session_id = presence.session_id
 		}
-		table.insert(players, player)
+		players[presence.direction + 1] = player
 	end
 
 	turnCount = 1
 	print("match_init setupstate.presences: ", nk.json_encode(setupstate.presences))
+	print("match_init players: ", nk.json_encode(players))
 	--	initialize gamestate
 	local gamestate = {
 		presences = setupstate.presences,
@@ -90,7 +92,7 @@ end
 
 function M.match_join(context, dispatcher, tick, state, presences)
 	local presence = table.remove(presences)	--	this is supposed to be the only presence
-	print("match_join presence: ", nk.json_encode(presence))
+
 	local gameStartMessage = {
 		cards = state.presences[presence.session_id].cards,
 		players = state.players,
