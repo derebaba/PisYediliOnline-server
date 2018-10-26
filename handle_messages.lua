@@ -44,13 +44,19 @@ function mh.playCard(context, dispatcher, tick, state, message)
 
 	local nextPlayerDirection = state.directions[((state.turnCount - 1) % #state.players) + 1]
 	state.turn = nextPlayerDirection
-	print(("playCard - next player: %s"):format(nextPlayerDirection))
+	state.mustDraw = 0
+
+	local passTurnMessage = {
+		direction = turn,
+		mustDraw = state.mustDraw
+	}
+	print(("playCard - pass turn message: %s"):format(nk.json_encode(passTurnMessage)))
 
 	if (card % 13 == 0) then
 		--local drawingPlayer = state.players[]
 	end
 
-	dispatcher.broadcast_message(5, nk.json_encode(nextPlayerDirection))
+	dispatcher.broadcast_message(5, nk.json_encode(passTurnMessage))
 end
 
 
