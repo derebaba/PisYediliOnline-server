@@ -47,7 +47,7 @@ function mh.playCard(context, dispatcher, tick, state, message)
 	state.mustDraw = 0
 
 	local passTurnMessage = {
-		direction = turn,
+		direction = nextPlayerDirection,
 		mustDraw = state.mustDraw
 	}
 	print(("playCard - pass turn message: %s"):format(nk.json_encode(passTurnMessage)))
