@@ -40,14 +40,25 @@ function mh.playCard(context, dispatcher, tick, state, message)
 	}
 	dispatcher.broadcast_message(4, nk.json_encode(playCardMessage))
 
-	print("play card - state.directions", nk.json_encode(state.directions))
+	if (state.clockwise) then
+		state.directionIndex = state.directionIndex + 1
 
-	local nextPlayerDirection = state.directions[((state.turnCount - 1) % #state.players) + 1]
-	state.turn = nextPlayerDirection
+		if (state.directionIndex == #state.players + 1) then
+			state.directionIndex = 1
+		end
+	else
+		state.directionIndex = state.directionIndex - 1
+
+		if (state.directionIndex == 0) then
+			state.directionIndex = #state.players
+		end
+	end
+
+	state.turn = state.directions[state.directionIndex]
 	state.mustDraw = 0
 
 	local passTurnMessage = {
-		direction = nextPlayerDirection,
+		direction = state.turn,
 		mustDraw = state.mustDraw
 	}
 	print(("playCard - pass turn message: %s"):format(nk.json_encode(passTurnMessage)))

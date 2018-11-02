@@ -78,7 +78,8 @@ function M.match_init(context, setupstate)
 		pile = {},
 		clockwise = true,
 		turnCount = turnCount,
-		directions = directions
+		directions = directions,
+		directionIndex = 1
 	}
 	local tickrate = 1 -- per sec
 	local label = ""
