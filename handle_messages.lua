@@ -40,6 +40,17 @@ function mh.playCard(context, dispatcher, tick, state, message)
 	}
 	dispatcher.broadcast_message(4, nk.json_encode(playCardMessage))
 
+	if (state.turnCount > #state.players) then
+		--	not first round
+		if (card % 13 == 0) then
+			--local drawingPlayer = state.players[]
+		elseif (card % 13 == 6) then
+
+		elseif (card % 13 == 9) then
+			state.clockwise = not state.clockwise
+		end
+	end
+
 	if (state.clockwise) then
 		state.directionIndex = state.directionIndex + 1
 
@@ -55,17 +66,12 @@ function mh.playCard(context, dispatcher, tick, state, message)
 	end
 
 	state.turn = state.directions[state.directionIndex]
-	state.mustDraw = 0
 
 	local passTurnMessage = {
 		direction = state.turn,
 		mustDraw = state.mustDraw
 	}
 	print(("playCard - pass turn message: %s"):format(nk.json_encode(passTurnMessage)))
-
-	if (card % 13 == 0) then
-		--local drawingPlayer = state.players[]
-	end
 
 	dispatcher.broadcast_message(5, nk.json_encode(passTurnMessage))
 end

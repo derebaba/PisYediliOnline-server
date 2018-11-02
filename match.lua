@@ -79,7 +79,8 @@ function M.match_init(context, setupstate)
 		clockwise = true,
 		turnCount = turnCount,
 		directions = directions,
-		directionIndex = 1
+		directionIndex = 1,
+		mustDraw = 0
 	}
 	local tickrate = 1 -- per sec
 	local label = ""
