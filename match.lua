@@ -17,7 +17,7 @@ function M.match_init(context, setupstate)
 	print(("match_init match_id: %s"):format(context.match_id))
 	--	initialize deck and shuffle
 	local deck = {}
-	for i = 0, 51, 1 do
+	for i = 0, 51, 1 do	
 		table.insert(deck, i)
 	end
 	deck = shuffle(deck)
@@ -80,7 +80,9 @@ function M.match_init(context, setupstate)
 		turnCount = turnCount,
 		directions = directions,
 		directionIndex = 1,
-		mustDraw = 0
+		pile7Count = 0,
+		lastCardA = false,
+		jiletSuit = -1
 	}
 	local tickrate = 1 -- per sec
 	local label = ""
@@ -136,7 +138,9 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 		local functionTable =
 		{
 			[2] = mh.drawCard,
-			[4] = mh.playCard
+			[4] = mh.playCard,
+			[5] = mh.endTurn,
+			[6] = mh.shuffle
 		}
 
 		local func = functionTable[message.op_code]

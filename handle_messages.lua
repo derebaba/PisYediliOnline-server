@@ -2,10 +2,22 @@ local nk = require("nakama")
 
 local mh = {}
 
+local function shuffleTable(tbl)
+	local size = #tbl
+	for i = size, 1, -1 do
+		local rand = math.random(size)
+		tbl[i], tbl[rand] = tbl[rand], tbl[i]
+	end
+	return tbl
+end
+
 local giveCardToPresence = function (state, dispatcher, presence)
 	local card = table.remove(state.deck)
 
 	table.insert(presence.cards, card)
+
+	state.pile7Count = 0
+	state.lastCardA = false
 
 	dispatcher.broadcast_message(2, nk.json_encode(card), {presence})
 
@@ -23,8 +35,6 @@ function mh.playCard(context, dispatcher, tick, state, message)
 
 	print(("playCard - %s played %s"):format(message.sender.username, card))
 
-	state.turnCount = state.turnCount + 1
-
 	local senderPresence = state.presences[message.sender.session_id];
 
 	for i = 1, #senderPresence.cards, 1 do
@@ -41,15 +51,27 @@ function mh.playCard(context, dispatcher, tick, state, message)
 	dispatcher.broadcast_message(4, nk.json_encode(playCardMessage))
 
 	if (state.turnCount > #state.players) then
+		local pile7Count = state.pile7Count
+		state.pile7Count = 0
+		state.lastCardA = false
+		state.jiletSuit = -1
 		--	not first round
 		if (card % 13 == 0) then
-			--local drawingPlayer = state.players[]
+			state.lastCardA = true;
 		elseif (card % 13 == 6) then
-
+			state.pile7Count = pile7Count + 1
 		elseif (card % 13 == 9) then
 			state.clockwise = not state.clockwise
+		elseif (card % 13 == 0) then
 		end
 	end
+
+	mh.endTurn(context, dispatcher, tick, state, message)
+end
+
+function mh.endTurn(context, dispatcher, tick, state, message)
+	
+	state.turnCount = state.turnCount + 1
 
 	if (state.clockwise) then
 		state.directionIndex = state.directionIndex + 1
@@ -69,11 +91,40 @@ function mh.playCard(context, dispatcher, tick, state, message)
 
 	local passTurnMessage = {
 		direction = state.turn,
-		mustDraw = state.mustDraw
+		pile7Count = state.pile7Count,
+		lastCardA = state.lastCardA,
+		jiletSuit = -1
 	}
-	print(("playCard - pass turn message: %s"):format(nk.json_encode(passTurnMessage)))
+	print(("end turn message: %s"):format(nk.json_encode(passTurnMessage)))
 
 	dispatcher.broadcast_message(5, nk.json_encode(passTurnMessage))
+end
+
+function mh.shuffle(context, dispatcher, tick, state, message)
+
+	local topCard = table.remove(state.pile)
+
+	local size = #state.pile
+	for i = size, 1, -1 do
+		local rand = math.random(size)
+		state.pile[i], state.pile[rand] = state.pile[rand], state.pile[i]
+	end
+
+	state.deck = state.pile
+	state.pile = {}
+	-- mem leak might occur
+	table.insert(state.pile, topCard)
+
+	print("deck size: ", #state.deck)
+	print("pile size: ", #state.pile)
+	
+	local shuffleMessage = {
+		deckSize = #state.deck,
+		topCard = topCard
+		-- topSuit will be used when jilet gets integrated
+	}
+
+	dispatcher.broadcast_message(6, nk.json_encode(shuffleMessage))
 end
 
 
