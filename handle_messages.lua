@@ -11,23 +11,38 @@ local function shuffleTable(tbl)
 	return tbl
 end
 
-local giveCardToPresence = function (state, dispatcher, presence)
-	local card = table.remove(state.deck)
+local giveCardToPresence = function (state, dispatcher, presence, cardCountToBeDrawn)
 
-	table.insert(presence.cards, card)
+	local drawnCards = {}
+	for i = 1, cardCountToBeDrawn, 1 do
+		local card = table.remove(state.deck)
+		table.insert(drawnCards, card)
+		table.insert(presence.cards, card)
+	end
 
 	state.pile7Count = 0
 	state.lastCardA = false
 
-	dispatcher.broadcast_message(2, nk.json_encode(card), {presence})
+	local cardDrawMessage = {
+		drawnCards = drawnCards
+	}
 
-	dispatcher.broadcast_message(3, nk.json_encode(presence.direction))
+	dispatcher.broadcast_message(2, nk.json_encode(cardDrawMessage), {presence})
+
+	local cardDrawBroadcastMessage = {
+		direction = presence.direction,
+		cardCount = cardCountToBeDrawn,
+		deckSize = #state.deck
+	}
+
+	dispatcher.broadcast_message(3, nk.json_encode(cardDrawBroadcastMessage))
 end
 
 function mh.drawCard(context, dispatcher, tick, state, message)
+	local cardCountToBeDrawn = nk.json_decode(message.data)
 	local senderPresence = state.presences[message.sender.session_id];
 
-	giveCardToPresence(state, dispatcher, senderPresence)
+	giveCardToPresence(state, dispatcher, senderPresence, cardCountToBeDrawn)
 end
 
 function mh.playCard(context, dispatcher, tick, state, message)
