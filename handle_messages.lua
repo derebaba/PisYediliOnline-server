@@ -93,7 +93,8 @@ function mh.endTurn(context, dispatcher, tick, state, message)
 		direction = state.turn,
 		pile7Count = state.pile7Count,
 		lastCardA = state.lastCardA,
-		jiletSuit = -1
+		jiletSuit = -1,
+		turnCount = state.turnCount
 	}
 	print(("end turn message: %s"):format(nk.json_encode(passTurnMessage)))
 

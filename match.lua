@@ -102,7 +102,8 @@ function M.match_join(context, dispatcher, tick, state, presences)
 		players = state.players,
 		turn = state.turn,
 		deckSize = #state.deck,
-		clockwise = state.clockwise
+		clockwise = state.clockwise,
+		turnCount = state.turnCount
 	}
 
 	print(("match_join - message: %s"):format(nk.json_encode(gameStartMessage)))
