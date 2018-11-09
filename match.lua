@@ -17,7 +17,7 @@ function M.match_init(context, setupstate)
 	print(("match_init match_id: %s"):format(context.match_id))
 	--	initialize deck and shuffle
 	local deck = {}
-	for i = 0, 17, 1 do	
+	for i = 0, 51, 1 do	
 		table.insert(deck, i)
 	end
 	deck = shuffle(deck)
