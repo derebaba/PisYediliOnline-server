@@ -46,10 +46,11 @@ function mh.drawCard(context, dispatcher, tick, state, message)
 end
 
 function mh.playCard(context, dispatcher, tick, state, message)
-	local card = nk.json_decode(message.data)
+	local playCardMessage = nk.json_decode(message.data)
 
-	print(("playCard - %s played %s"):format(message.sender.username, card))
+	print(("playCardMessage received from %s: %s"):format(message.sender.username, message.data))
 
+	local card = playCardMessage.cardId;
 	local senderPresence = state.presences[message.sender.session_id];
 
 	for i = 1, #senderPresence.cards, 1 do
@@ -59,17 +60,13 @@ function mh.playCard(context, dispatcher, tick, state, message)
 		end
 	end
 
-	local playCardMessage = {
-		playerDirection = state.turn,
-		cardId = card
-	}
 	dispatcher.broadcast_message(4, nk.json_encode(playCardMessage))
 
 	if (state.turnCount > #state.players) then
 		local pile7Count = state.pile7Count
 		state.pile7Count = 0
 		state.lastCardA = false
-		state.jiletSuit = -1
+		state.jiletSuit = playCardMessage.jiletSuit
 		--	not first round
 		if (card % 13 == 0) then
 			state.lastCardA = true;
@@ -108,7 +105,6 @@ function mh.endTurn(context, dispatcher, tick, state, message)
 		direction = state.turn,
 		pile7Count = state.pile7Count,
 		lastCardA = state.lastCardA,
-		jiletSuit = -1,
 		turnCount = state.turnCount
 	}
 	print(("end turn message: %s"):format(nk.json_encode(passTurnMessage)))
@@ -133,7 +129,7 @@ function mh.shuffle(context, dispatcher, tick, state, message)
 
 	print("deck size: ", #state.deck)
 	print("pile size: ", #state.pile)
-	
+
 	local shuffleMessage = {
 		deckSize = #state.deck,
 		topCard = topCard
