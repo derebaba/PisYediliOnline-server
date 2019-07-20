@@ -155,4 +155,9 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 	return state
 end
 
+function M.match_terminate(context, dispatcher, tick, state, grace_seconds)
+	print("Server shutting down in " .. grace_seconds .. " seconds")
+	return nil
+  end
+
 return M
