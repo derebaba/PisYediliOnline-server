@@ -48,7 +48,7 @@ end
 function mh.playCard(context, dispatcher, tick, state, message)
 	local playCardMessage = nk.json_decode(message.data)
 
-	print(("playCardMessage received from %s: %s"):format(message.sender.username, message.data))
+	print("playCardMessage received from " .. message.sender.username .. ": " .. message.data)
 
 	local card = playCardMessage.cardId;
 	local senderPresence = state.presences[message.sender.session_id];
@@ -82,7 +82,6 @@ function mh.playCard(context, dispatcher, tick, state, message)
 end
 
 function mh.endTurn(context, dispatcher, tick, state, message)
-	
 	state.turnCount = state.turnCount + 1
 
 	if (state.clockwise) then
@@ -107,9 +106,16 @@ function mh.endTurn(context, dispatcher, tick, state, message)
 		lastCardA = state.lastCardA,
 		turnCount = state.turnCount
 	}
-	print(("end turn message: %s"):format(nk.json_encode(passTurnMessage)))
+	print("end turn message: " .. nk.json_encode(passTurnMessage))
 
-	dispatcher.broadcast_message(5, nk.json_encode(passTurnMessage))
+	local senderPresence = state.presences[message.sender.session_id];
+
+	if (#senderPresence.cards == 0) then
+		dispatcher.broadcast_message(7, "Maç bitti. Kazanan " .. message.sender.username)
+	else
+		dispatcher.broadcast_message(5, nk.json_encode(passTurnMessage))
+	end
+
 end
 
 function mh.shuffle(context, dispatcher, tick, state, message)

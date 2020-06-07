@@ -14,7 +14,7 @@ local function shuffle(tbl)
 end
 
 function M.match_init(context, setupstate)
-	print(("match_init match_id: %s"):format(context.match_id))
+	print("match_init match_id: " .. context.match_id)
 	--	initialize deck and shuffle
 	local deck = {}
 	for i = 0, 51, 1 do	
@@ -106,7 +106,7 @@ function M.match_join(context, dispatcher, tick, state, presences)
 		turnCount = state.turnCount
 	}
 
-	print(("match_join - message: %s"):format(nk.json_encode(gameStartMessage)))
+	print("match_join - message: " .. nk.json_encode(gameStartMessage))
 
 	dispatcher.broadcast_message(1, nk.json_encode(gameStartMessage), {presence})
 	return state
@@ -130,9 +130,9 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 		return state
 	end
 	]]--
-	for _, presence in pairs(state.presences) do
+	--for _, presence in pairs(state.presences) do
 		--print(("Presence %s match: %s"):format(presence.session_id, context.match_id))
-	end
+	--end
 	for _, message in ipairs(messages) do	--	sender, op_code, data, receive_time_ms
 		print("Message received with op_code: ", message.op_code)
 
