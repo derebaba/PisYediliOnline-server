@@ -145,5 +145,18 @@ function mh.shuffle(context, dispatcher, tick, state, message)
 	dispatcher.broadcast_message(6, nk.json_encode(shuffleMessage))
 end
 
+function mh.broadcastChatMessage(context, dispatcher, tick, state, message)
+	local data = nk.json_decode(message.data)
+	local bcMessage
+	if (data.messageCode == 14) then
+		bcMessage = {
+			senderDirection = message.sender.direction,
+			text = "reyiz\r\n en çok değiştirilen karttır"
+		}
+	end
+
+	print("sender: " .. nk.json_encode(message.sender))
+	dispatcher.broadcast_message(9, nk.json_encode(bcMessage), nil, state.presences[message.sender.session_id])
+end
 
 return mh

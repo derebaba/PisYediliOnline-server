@@ -141,7 +141,8 @@ function M.match_loop(context, dispatcher, tick, state, messages)
 			[2] = mh.drawCard,
 			[4] = mh.playCard,
 			[5] = mh.endTurn,
-			[6] = mh.shuffle
+			[6] = mh.shuffle,
+			[8] = mh.broadcastChatMessage
 		}
 
 		local func = functionTable[message.op_code]
