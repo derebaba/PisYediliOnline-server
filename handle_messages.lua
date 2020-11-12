@@ -148,10 +148,25 @@ end
 function mh.broadcastChatMessage(context, dispatcher, tick, state, message)
 	local data = nk.json_decode(message.data)
 	local bcMessage
-	if (data.messageCode == 14) then
+	if (data.messageCode == 1) then
 		bcMessage = {
 			senderDirection = message.sender.direction,
-			text = "reyiz\r\n en çok değiştirilen karttır"
+			text = "as var mi?"
+		}
+	elseif (data.messageCode == 11) then
+		bcMessage = {
+			senderDirection = message.sender.direction,
+			text = "Jilet var mi?"
+		}
+	elseif (data.messageCode == 14) then
+		bcMessage = {
+			senderDirection = message.sender.direction,
+			text = "Bir istatistige gore\r\nreyiz en cok degistirilen karttir."
+		}
+	else
+		bcMessage = {
+			senderDirection = message.sender.direction,
+			text = data.messageCode .. " var mi?"
 		}
 	end
 
